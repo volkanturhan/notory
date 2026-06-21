@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "notory", "notory\notory.csproj", "{E5F60718-92A3-4B44-CD5E-6F7081920314}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E5F60718-92A3-4B44-CD5E-6F7081920314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5F60718-92A3-4B44-CD5E-6F7081920314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5F60718-92A3-4B44-CD5E-6F7081920314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5F60718-92A3-4B44-CD5E-6F7081920314}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B90A1B2C-3D4E-4F50-7182-93A4B5C6D7E8}
+	EndGlobalSection
+EndGlobal
