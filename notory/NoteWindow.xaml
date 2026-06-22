@@ -1,0 +1,99 @@
+<Window x:Class="notory.NoteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:notory"
+        xmlns:services="clr-namespace:notory.Services"
+        mc:Ignorable="d"
+        Title="notory"
+        Width="380" Height="460"
+        MinWidth="280" MinHeight="240"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI"
+        Background="{DynamicResource WindowBg}">
+
+    <Window.Resources>
+        <Style x:Key="LinkButton" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource TextMuted}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" CornerRadius="5" Background="{TemplateBinding Background}" Padding="10,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceHover}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+
+        <!-- Menu bar (kept light in both themes so its text stays readable). -->
+        <Menu DockPanel.Dock="Top" Background="#F9FAFB">
+            <MenuItem Header="{Binding [TrayLanguage], Source={x:Static services:Localization.Instance}}">
+                <MenuItem x:Name="EnglishMenuItem" Header="English" IsCheckable="True" Click="OnEnglish" />
+                <MenuItem x:Name="TurkishMenuItem" Header="Türkçe" IsCheckable="True" Click="OnTurkish" />
+            </MenuItem>
+            <MenuItem Header="{Binding [TrayTheme], Source={x:Static services:Localization.Instance}}">
+                <MenuItem x:Name="ThemeSystemItem" IsCheckable="True" Click="OnThemeSystem"
+                          Header="{Binding [ThemeSystem], Source={x:Static services:Localization.Instance}}" />
+                <MenuItem x:Name="ThemeDarkItem" IsCheckable="True" Click="OnThemeDark"
+                          Header="{Binding [ThemeDark], Source={x:Static services:Localization.Instance}}" />
+                <MenuItem x:Name="ThemeLightItem" IsCheckable="True" Click="OnThemeLight"
+                          Header="{Binding [ThemeLight], Source={x:Static services:Localization.Instance}}" />
+            </MenuItem>
+            <MenuItem x:Name="AutoStartMenuItem" IsCheckable="True" Click="OnToggleAutoStart"
+                      Header="{Binding [TrayAutostart], Source={x:Static services:Localization.Instance}}" />
+            <MenuItem Click="OnAbout"
+                      Header="{Binding [TrayAbout], Source={x:Static services:Localization.Instance}}" />
+        </Menu>
+
+        <!-- Footer: live character count + clear. -->
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource ToolbarBg}" Padding="12,6">
+            <DockPanel>
+                <TextBlock x:Name="CountText" VerticalAlignment="Center"
+                           FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                <Button HorizontalAlignment="Right" Style="{StaticResource LinkButton}" Click="OnClear"
+                        Content="{Binding [Clear], Source={x:Static services:Localization.Instance}}" />
+            </DockPanel>
+        </Border>
+
+        <!-- The note text, with a placeholder shown only while empty. -->
+        <Grid Background="{DynamicResource WindowBg}">
+            <TextBox x:Name="NoteBox"
+                     Background="Transparent" BorderThickness="0"
+                     Foreground="{DynamicResource TextPrimary}"
+                     CaretBrush="{DynamicResource TextPrimary}"
+                     FontSize="14" Padding="14,12"
+                     AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     VerticalContentAlignment="Top"
+                     TextChanged="OnTextChanged" />
+            <TextBlock Text="{Binding [Placeholder], Source={x:Static services:Localization.Instance}}"
+                       Margin="16,14,0,0" VerticalAlignment="Top" IsHitTestVisible="False"
+                       FontSize="14" Foreground="{DynamicResource TextMuted}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=NoteBox}" Value="">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+    </DockPanel>
+</Window>
