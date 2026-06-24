@@ -9,15 +9,12 @@ namespace notory;
 
 /// <summary>
 /// The quick-note window: a single auto-saving scratchpad. Typing persists to the
-/// <see cref="NoteStore"/> immediately; a menu mirrors the tray settings
-/// (language, theme, start with Windows, about). Closing hides it to the tray.
+/// <see cref="NoteStore"/> immediately. Settings (language, theme, start with
+/// Windows, about) live in the tray menu. Closing hides it to the tray.
 /// </summary>
 public partial class NoteWindow : Window
 {
     private readonly NoteStore _store;
-
-    /// <summary>Raised when the user picks About from the menu.</summary>
-    public event Action? AboutRequested;
 
     public NoteWindow(NoteStore store)
     {
@@ -27,8 +24,9 @@ public partial class NoteWindow : Window
         NoteBox.Text = store.Load();
         UpdateCount();
 
-        RefreshMenuChecks();
-        Activated += (_, _) => RefreshMenuChecks();
+        // The character count carries a localized "characters" suffix, so refresh
+        // it when the language changes (from the tray) even without a keystroke.
+        Localization.Instance.LanguageChanged += UpdateCount;
     }
 
     /// <summary>Puts the caret in the note, ready to type.</summary>
@@ -52,45 +50,6 @@ public partial class NoteWindow : Window
 
     private void UpdateCount()
         => CountText.Text = $"{NoteBox.Text.Length} {Localization.Instance["Chars"]}";
-
-    private void OnEnglish(object sender, RoutedEventArgs e)
-    {
-        Localization.Instance.Language = AppLanguage.English;
-        RefreshMenuChecks();
-        UpdateCount();
-    }
-
-    private void OnTurkish(object sender, RoutedEventArgs e)
-    {
-        Localization.Instance.Language = AppLanguage.Turkish;
-        RefreshMenuChecks();
-        UpdateCount();
-    }
-
-    private void OnThemeSystem(object sender, RoutedEventArgs e) => SetTheme(AppTheme.System);
-    private void OnThemeDark(object sender, RoutedEventArgs e) => SetTheme(AppTheme.Dark);
-    private void OnThemeLight(object sender, RoutedEventArgs e) => SetTheme(AppTheme.Light);
-
-    private void SetTheme(AppTheme theme)
-    {
-        ThemeService.Apply(theme);
-        RefreshMenuChecks();
-    }
-
-    private void OnToggleAutoStart(object sender, RoutedEventArgs e)
-        => AutoStart.SetEnabled(AutoStartMenuItem.IsChecked);
-
-    private void OnAbout(object sender, RoutedEventArgs e) => AboutRequested?.Invoke();
-
-    private void RefreshMenuChecks()
-    {
-        EnglishMenuItem.IsChecked = Localization.Instance.Language == AppLanguage.English;
-        TurkishMenuItem.IsChecked = Localization.Instance.Language == AppLanguage.Turkish;
-        AutoStartMenuItem.IsChecked = AutoStart.IsEnabled();
-        ThemeSystemItem.IsChecked = ThemeService.Theme == AppTheme.System;
-        ThemeDarkItem.IsChecked = ThemeService.Theme == AppTheme.Dark;
-        ThemeLightItem.IsChecked = ThemeService.Theme == AppTheme.Light;
-    }
 
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {

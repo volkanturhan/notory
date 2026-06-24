@@ -59,7 +59,6 @@ public partial class App : Application
         // hides instead of closing.
         _noteStore = new NoteStore();
         _note = new NoteWindow(_noteStore);
-        _note.AboutRequested += ShowAbout;
 
         // Ctrl+Shift+N toggles the note.
         _hotkey = new HotkeyService();
