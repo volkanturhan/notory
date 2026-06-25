@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using notory.Services;
 
 // Disambiguate from System.Windows.Localization (pulled in via System.Windows).
@@ -47,6 +48,17 @@ public partial class NoteWindow : Window
         NoteBox.Clear();
         NoteBox.Focus();
     }
+
+    // The window is borderless (no native title bar), so dragging the custom
+    // header moves it.
+    private void OnHeaderDrag(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+            DragMove();
+    }
+
+    // The custom close button hides the note to the tray, like pressing X did.
+    private void OnCloseClick(object sender, RoutedEventArgs e) => Hide();
 
     private void UpdateCount()
         => CountText.Text = $"{NoteBox.Text.Length} {Localization.Instance["Chars"]}";

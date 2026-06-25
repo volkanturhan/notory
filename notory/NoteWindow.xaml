@@ -8,10 +8,12 @@
         mc:Ignorable="d"
         Title="notory"
         Width="380" Height="460"
-        MinWidth="280" MinHeight="240"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
         WindowStartupLocation="CenterScreen"
-        FontFamily="Segoe UI"
-        Background="{DynamicResource WindowBg}">
+        FontFamily="Segoe UI">
 
     <Window.Resources>
         <Style x:Key="LinkButton" TargetType="Button">
@@ -35,45 +37,102 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Small borderless "close" button shown in the custom title bar. -->
+        <Style x:Key="CloseButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMuted}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" CornerRadius="5" Background="{TemplateBinding Background}">
+                            <TextBlock Text="✕" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       FontSize="{TemplateBinding FontSize}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SurfaceHover}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
-    <DockPanel>
+    <!-- Outer margin leaves room for the drop shadow; the card is the Border. -->
+    <Border Margin="12" CornerRadius="12"
+            Background="{DynamicResource WindowBg}"
+            BorderBrush="{DynamicResource Divider}" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" Opacity="0.22" BlurRadius="20" ShadowDepth="0" />
+        </Border.Effect>
 
-        <!-- Footer: live character count + clear. -->
-        <Border DockPanel.Dock="Bottom" Background="{DynamicResource ToolbarBg}" Padding="12,6">
-            <DockPanel>
-                <TextBlock x:Name="CountText" VerticalAlignment="Center"
-                           FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                <Button HorizontalAlignment="Right" Style="{StaticResource LinkButton}" Click="OnClear"
-                        Content="{Binding [Clear], Source={x:Static services:Localization.Instance}}" />
-            </DockPanel>
-        </Border>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <!-- The note text, with a placeholder shown only while empty. -->
-        <Grid Background="{DynamicResource WindowBg}">
-            <TextBox x:Name="NoteBox"
-                     Background="Transparent" BorderThickness="0"
-                     Foreground="{DynamicResource TextPrimary}"
-                     CaretBrush="{DynamicResource TextPrimary}"
-                     FontSize="14" Padding="14,12"
-                     AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
-                     VerticalScrollBarVisibility="Auto"
-                     VerticalContentAlignment="Top"
-                     TextChanged="OnTextChanged" />
-            <TextBlock Text="{Binding [Placeholder], Source={x:Static services:Localization.Instance}}"
-                       Margin="16,14,0,0" VerticalAlignment="Top" IsHitTestVisible="False"
-                       FontSize="14" Foreground="{DynamicResource TextMuted}">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=NoteBox}" Value="">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
+            <!-- Custom title bar: brand mark + name on the left, close on the right.
+                 The whole bar is draggable since there is no native title bar. -->
+            <Grid Grid.Row="0" Background="Transparent" Margin="14,12,12,6"
+                  MouseLeftButtonDown="OnHeaderDrag">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="14" Height="14" CornerRadius="4" Background="{DynamicResource Accent}" />
+                    <TextBlock Text="notory" Margin="8,0,0,0"
+                               FontWeight="SemiBold" FontSize="13"
+                               Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                </StackPanel>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Style="{StaticResource CloseButtonStyle}" Click="OnCloseClick"
+                        ToolTip="{Binding [TrayQuit], Source={x:Static services:Localization.Instance}}" />
+            </Grid>
+
+            <!-- The note text, with a placeholder shown only while empty. -->
+            <Grid Grid.Row="1">
+                <TextBox x:Name="NoteBox"
+                         Background="Transparent" BorderThickness="0"
+                         Foreground="{DynamicResource TextPrimary}"
+                         CaretBrush="{DynamicResource TextPrimary}"
+                         FontSize="14" Padding="14,2"
+                         AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         VerticalContentAlignment="Top"
+                         TextChanged="OnTextChanged" />
+                <TextBlock Text="{Binding [Placeholder], Source={x:Static services:Localization.Instance}}"
+                           Margin="16,4,0,0" VerticalAlignment="Top" IsHitTestVisible="False"
+                           FontSize="14" Foreground="{DynamicResource TextMuted}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=NoteBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+
+            <!-- Footer: live character count + clear. -->
+            <Border Grid.Row="2" Background="Transparent" Padding="14,8">
+                <DockPanel>
+                    <TextBlock x:Name="CountText" VerticalAlignment="Center"
+                               FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                    <Button HorizontalAlignment="Right" Style="{StaticResource LinkButton}" Click="OnClear"
+                            Content="{Binding [Clear], Source={x:Static services:Localization.Instance}}" />
+                </DockPanel>
+            </Border>
         </Grid>
-    </DockPanel>
+    </Border>
 </Window>
