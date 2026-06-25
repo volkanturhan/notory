@@ -9,7 +9,8 @@ bir not açılsın — bir şey karala, tekrar bas, kenara çekilsin. Yazdığı
 otomatik kaydedilir ve bir dahakine geri yüklenir; hep aynı not seni bekler.
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="notory hızlı not" width="360" />
+  <img src="docs/screenshot-dark.png" alt="notory hızlı not (dark)" width="360" />
+  <img src="docs/screenshot-light.png" alt="notory hızlı not (light)" width="360" />
 </p>
 
 ## Özellikler

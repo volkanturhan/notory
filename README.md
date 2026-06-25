@@ -10,7 +10,8 @@ Whatever you type is saved automatically and restored next time, so it's always
 the same note waiting for you.
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="notory's quick note" width="360" />
+  <img src="docs/screenshot-dark.png" alt="notory's quick note (dark)" width="360" />
+  <img src="docs/screenshot-light.png" alt="notory's quick note (light)" width="360" />
 </p>
 
 ## Features
